@@ -5,18 +5,46 @@ output:
     keep_md: true
 ---
 
-
 ## Loading and preprocessing the data
+First lets download the data, uzip it and put it in a variable **data**
 
-
+```{r echo = TRUE}
+temp <- tempfile()
+download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip",temp)
+data <- read.csv(unz(temp, "activity.csv"))
+unlink(temp)
+```
 
 ## What is mean total number of steps taken per day?
-
-
+As per the instructions:
+1. Calculate the total number of steps taken per day (We're are going to store this in a variable called totalStepPerDay for safe keeping)
+```{r echo = TRUE}
+totalStepPerDay <- aggregate(steps ~ date, data, sum)
+```
+2. Make a histogram of the total number of steps taken each day (We'll do this using hist())
+```{r echo = TRUE}
+hist(totalStepPerDay$steps, breaks=50, main="Histogram of Total steps taken per day")
+```
+3. Calculate and report the mean and median of the total number of steps taken per day
+```{r echo = TRUE}
+mean(totalStepPerDay$steps)
+median(totalStepPerDay$steps)
+```
 
 ## What is the average daily activity pattern?
+Now we're going to make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
+```{r echo = TRUE}
+## average number of steps taken per interval
+averageStepPerInterval <- aggregate(steps ~ interval, data, mean)
 
+plot(averageStepPerInterval$interval, averageStepPerInterval$steps, type='l', xlab= '5 min. interval', ylab= 'average # of steps taken', col='blue', main='Time series of average steps taken during each 5min. interval', lwd=2)
+```
+
+Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+```{r echo = TRUE}
+averageStepPerInterval[averageStepPerInterval$steps==max(averageStepPerInterval$steps),1]
+```
 
 ## Imputing missing values
 
